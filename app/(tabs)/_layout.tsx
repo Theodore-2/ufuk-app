@@ -1,56 +1,60 @@
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "./theme/ThemeContext";
+import { Colors } from "../../constants/Colors";
 
 export default function TabsLayout() {
+  const { theme } = useTheme();
+  const colors = Colors[theme as "light" | "dark"] || Colors.light;
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
+        tabBarActiveTintColor: colors.tabIconSelected,
+        tabBarInactiveTintColor: colors.tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopWidth: 0,
+        },
         headerShown: false,
       }}
     >
-      {/* Ana sayfa */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Anasayfa',
+          title: "Anasayfa",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
-
-      {/* Ders Programı */}
       <Tabs.Screen
         name="schedule"
         options={{
-          title: 'Ders Programı',
+          title: "Ders Programı",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
       />
-
-      {/* Ders Kayıt Talebi */}
       <Tabs.Screen
         name="lesson_request"
         options={{
-          title: 'Ders Talebi',
+          title: "Ders Talebi",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="create" size={size} color={color} />
           ),
         }}
       />
-      {/* Profil */}
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profil',
+          title: "Profil",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
         }}
-      />  
+      />
     </Tabs>
   );
 }

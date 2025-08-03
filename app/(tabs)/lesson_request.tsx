@@ -1,25 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   FlatList,
   TextInput,
   Alert,
+  ListRenderItem,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "../(tabs)/theme/ThemeContext";
+import { Colors } from "../../constants/Colors";
+
+type Lesson = {
+  id: string;
+  name: string;
+  teacher: string;
+  day: string;
+  time: string;
+};
+
+const { height } = Dimensions.get("window");
 
 export default function LessonRequestScreen() {
-  // Mock dersler
-  type Lesson = {
-    id: string;
-    name: string;
-    teacher: string;
-    day: string;
-    time: string;
-  };
-
   const lessons: Lesson[] = [
     { id: "1", name: "Matematik", teacher: "Ahmet Hoca", day: "Pazartesi", time: "09:00" },
     { id: "2", name: "Fizik", teacher: "Ayşe Hoca", day: "Salı", time: "11:00" },
@@ -33,7 +38,12 @@ export default function LessonRequestScreen() {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [selectedDay, setSelectedDay] = useState("Tümü");
   const [searchText, setSearchText] = useState("");
-  const [requestedLessons, setRequestedLessons] = useState<string[]>([]); // çift talep kontrolü
+  const [requestedLessons, setRequestedLessons] = useState<string[]>([]);
+
+  const { theme } = useTheme();
+  const colors = Colors[theme as "light" | "dark"];
+
+  const flatListRef = useRef<FlatList<Lesson>>(null);
 
   const filteredLessons = lessons.filter((lesson) => {
     const matchesDay = selectedDay === "Tümü" || lesson.day === selectedDay;
@@ -44,7 +54,7 @@ export default function LessonRequestScreen() {
     return matchesDay && matchesSearch;
   });
 
-  const handleRequest = () => {
+  const handleRequest = useCallback(() => {
     if (!selectedLesson) {
       Alert.alert("Hata", "Lütfen bir ders seçin");
       return;
@@ -68,94 +78,160 @@ export default function LessonRequestScreen() {
         },
       ]
     );
+  }, [selectedLesson, requestedLessons]);
+
+  const handleLessonSelect = useCallback(
+    (lesson: Lesson, index: number) => {
+      setSelectedLesson(lesson);
+      flatListRef.current?.scrollToIndex({ index, animated: true });
+    },
+    []
+  );
+
+  const renderLesson: ListRenderItem<Lesson> = ({ item, index }) => {
+    const isSelected = selectedLesson?.id === item.id;
+    return (
+      <Pressable
+        style={[
+          styles.lessonItem,
+          { backgroundColor: colors.lessonItemBackground },
+          isSelected && {
+            borderColor: colors.lessonSelectedBorder,
+            borderWidth: 2,
+          },
+        ]}
+        onPress={() => handleLessonSelect(item, index)}
+      >
+        <Text
+          style={[
+            styles.lessonName,
+            { color: isSelected ? colors.lessonSelectedText : colors.text },
+          ]}
+        >
+          {item.name}
+        </Text>
+        <Text style={[styles.lessonInfo, { color: colors.subText }]}>
+          {item.teacher} • {item.day} • {item.time}
+        </Text>
+      </Pressable>
+    );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Başlık */}
-      <LinearGradient colors={["#6a11cb", "#2575fc"]} style={styles.header}>
-        <Text style={styles.headerTitle}>📌 Ders Kayıt Talebi</Text>
-        <Text style={styles.headerSub}>Mevcut derslerden seçim yapın</Text>
+      <LinearGradient colors={colors.headerGradient} style={styles.header}>
+        <View>
+          <Text style={[styles.headerTitle, { color: colors.headerText }]}>
+            📌 Ders Kayıt Talebi
+          </Text>
+          <Text style={[styles.headerSub, { color: colors.headerSubText }]}>
+            Mevcut derslerden seçim yapın
+          </Text>
+        </View>
       </LinearGradient>
 
       {/* Gün Filtresi */}
       <View style={styles.dayFilter}>
-        {days.map((day) => (
-          <TouchableOpacity
-            key={day}
-            style={[
-              styles.dayButton,
-              selectedDay === day && styles.dayButtonSelected,
-            ]}
-            onPress={() => setSelectedDay(day)}
-          >
-            <Text
+        {days.map((day) => {
+          const isSelected = selectedDay === day;
+          return (
+            <Pressable
+              key={day}
               style={[
-                styles.dayButtonText,
-                selectedDay === day && styles.dayButtonTextSelected,
+                styles.dayButton,
+                isSelected && { backgroundColor: colors.daySelectedBackground },
               ]}
+              onPress={() => setSelectedDay(day)}
             >
-              {day}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.dayButtonText,
+                  { color: isSelected ? colors.daySelectedText : colors.text },
+                ]}
+              >
+                {day}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       {/* Arama */}
       <TextInput
-        style={styles.searchInput}
+        style={[
+          styles.searchInput,
+          { backgroundColor: colors.cardBackground, color: colors.text },
+        ]}
         placeholder="Ders adı, hoca adı veya saat ara..."
+        placeholderTextColor={colors.subText}
         value={searchText}
         onChangeText={setSearchText}
       />
 
       {/* Ders Listesi */}
       <FlatList
+        ref={flatListRef}
         data={filteredLessons}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.lessonItem,
-              selectedLesson?.id === item.id && styles.lessonSelected,
-            ]}
-            onPress={() => setSelectedLesson(item)}
-          >
-            <Text style={styles.lessonName}>{item.name}</Text>
-            <Text style={styles.lessonInfo}>
-              {item.teacher} • {item.day} • {item.time}
-            </Text>
-          </TouchableOpacity>
-        )}
+        renderItem={renderLesson}
         contentContainerStyle={{ padding: 20 }}
+        ListEmptyComponent={
+          <Text style={{ color: colors.subText, textAlign: "center", marginTop: 20 }}>
+            📭 Aradığınız kriterlere uygun ders bulunamadı.
+          </Text>
+        }
       />
 
       {/* Talep Gönder Butonu */}
-      <TouchableOpacity onPress={handleRequest} style={styles.submitBtn}>
-        <LinearGradient colors={["#ff512f", "#dd2476"]} style={styles.submitGradient}>
-          <Text style={styles.submitText}>Talebi Gönder</Text>
+      <Pressable onPress={handleRequest} style={styles.submitBtn}>
+        <LinearGradient colors={colors.headerGradient} style={styles.submitGradient}>
+          <Text style={[styles.submitText, { color: colors.headerText }]}>
+            Talebi Gönder
+          </Text>
         </LinearGradient>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9" },
-  header: { paddingTop: 50, paddingBottom: 20, paddingHorizontal: 20 },
-  headerTitle: { color: "#fff", fontSize: 24, fontWeight: "bold" },
-  headerSub: { color: "#eee", fontSize: 14, marginTop: 4 },
-  dayFilter: { flexDirection: "row", padding: 10, justifyContent: "space-around" },
-  dayButton: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, backgroundColor: "#ddd" },
-  dayButtonSelected: { backgroundColor: "#6a11cb" },
-  dayButtonText: { fontSize: 12, color: "#333" },
-  dayButtonTextSelected: { color: "#fff", fontWeight: "bold" },
-  searchInput: { backgroundColor: "#fff", marginHorizontal: 20, padding: 10, borderRadius: 8, marginBottom: 10 },
-  lessonItem: { padding: 15, borderRadius: 10, backgroundColor: "#fff", marginBottom: 10 },
-  lessonSelected: { borderColor: "#6a11cb", borderWidth: 2 },
+  container: { flex: 1 },
+  header: {
+    height: height * 0.18,
+    paddingHorizontal: 20,
+    paddingTop: height * 0.02,
+    justifyContent: "center",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  headerTitle: { fontSize: 24, fontWeight: "bold" },
+  headerSub: { fontSize: 14, marginTop: 5, marginHorizontal: 30 },
+  dayFilter: {
+    flexDirection: "row",
+    padding: 10,
+    justifyContent: "space-around",
+  },
+  dayButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  dayButtonText: { fontSize: 12 },
+  searchInput: {
+    marginHorizontal: 20,
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  lessonItem: {
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
   lessonName: { fontSize: 16, fontWeight: "bold" },
-  lessonInfo: { fontSize: 12, color: "#666" },
+  lessonInfo: { fontSize: 12 },
   submitBtn: { margin: 20, borderRadius: 12, overflow: "hidden" },
   submitGradient: { padding: 15, alignItems: "center" },
-  submitText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  submitText: { fontSize: 16, fontWeight: "bold" },
 });

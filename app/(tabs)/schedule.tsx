@@ -1,9 +1,13 @@
 // app/schedule.tsx
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { useTheme } from "./theme/ThemeContext";
+import { Colors } from "../../constants/Colors";
 
 export default function ScheduleScreen() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const lessons = [
     { id: "1", day: "Pazartesi", time: "09:00", title: "Matematik" },
     { id: "2", day: "Pazartesi", time: "13:00", title: "Fizik" },
@@ -13,11 +17,25 @@ export default function ScheduleScreen() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: Colors[theme].background },
+      ]}
+    >
       {/* Üst Başlık */}
-      <LinearGradient colors={["#6a11cb", "#2575fc"]} style={styles.header}>
-        <Text style={styles.headerTitle}>📅 Ders Programım</Text>
-        <Text style={styles.headerSub}>Tüm haftalık ders planını görüntüle</Text>
+      <LinearGradient
+        colors={[Colors[theme].tint, Colors[theme].card]}
+        style={styles.header}
+      >
+        <Text style={[styles.headerTitle, { color: Colors[theme].headerSubText }]}>
+          📅 Ders Programım
+        </Text>
+        <Text
+          style={[styles.headerSub, { color: Colors[theme].headerSubText }]}
+        >
+          Tüm haftalık ders planını görüntüle
+        </Text>
       </LinearGradient>
 
       {/* Liste */}
@@ -26,12 +44,27 @@ export default function ScheduleScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 15 }}
         renderItem={({ item }) => (
-          <View style={styles.lessonCard}>
+          <View
+            style={[
+              styles.lessonCard,
+              { backgroundColor: Colors[theme].card },
+            ]}
+          >
             <View>
-              <Text style={styles.lessonDay}>{item.day}</Text>
-              <Text style={styles.lessonTime}>{item.time}</Text>
+              <Text
+                style={[styles.lessonDay, { color: Colors[theme].headerSubText }]}
+              >
+                {item.day}
+              </Text>
+              <Text
+                style={[styles.lessonTime, { color: Colors[theme].text }]}
+              >
+                {item.time}
+              </Text>
             </View>
-            <Text style={styles.lessonTitle}>{item.title}</Text>
+            <Text style={[styles.lessonTitle, { color: Colors[theme].text }]}>
+              {item.title}
+            </Text>
           </View>
         )}
       />
@@ -40,7 +73,7 @@ export default function ScheduleScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9" },
+  container: { flex: 1 },
   header: {
     paddingTop: 50,
     paddingBottom: 20,
@@ -48,11 +81,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
-  headerTitle: { color: "#fff", fontSize: 24, fontWeight: "bold" },
-  headerSub: { color: "#eee", fontSize: 14, marginTop: 4 },
-
+  headerTitle: { fontSize: 24, fontWeight: "bold" },
+  headerSub: { fontSize: 14, marginTop: 4 },
   lessonCard: {
-    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 12,
     flexDirection: "row",
@@ -64,7 +95,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 10,
   },
-  lessonDay: { fontSize: 14, fontWeight: "bold", color: "#555" },
-  lessonTime: { fontSize: 12, color: "#888" },
-  lessonTitle: { fontSize: 16, fontWeight: "600", color: "#333" },
+  lessonDay: { fontSize: 14, fontWeight: "bold" },
+  lessonTime: { fontSize: 12 },
+  lessonTitle: { fontSize: 16, fontWeight: "600" },
 });
