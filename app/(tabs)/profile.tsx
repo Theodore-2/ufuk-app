@@ -1,11 +1,13 @@
-// app/(tabs)/profile.tsx
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "./theme/ThemeContext";
 import { Colors } from "../../constants/Colors";
 
+const { height } = Dimensions.get("window");
+
 export default function ProfileScreen() {
   const { theme } = useTheme();
+  const colors = Colors[theme as "light" | "dark"];
 
   const student = {
     name: "Arda Çimen",
@@ -21,28 +23,27 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: Colors[theme].background }]}>
-      <LinearGradient
-        colors={[Colors[theme].tint, Colors[theme].icon]}
-        style={styles.header}
-      >
-        <Text style={[styles.name, { color: Colors[theme].text }]}>{student.name}</Text>
-        <Text style={[styles.subText, { color: Colors[theme].placeholder }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
+      <LinearGradient colors={colors.headerGradient} style={styles.header}>
+        <Text style={[styles.name, { color: colors.headerText }]}>{student.name}</Text>
+        <Text style={[styles.subText, { color: colors.headerSubText }]}>
           Öğrenci No: {student.studentNo}
         </Text>
-        <Text style={[styles.subText, { color: Colors[theme].placeholder }]}>
+        <Text style={[styles.subText, { color: colors.headerSubText }]}>
           {student.phone}
         </Text>
       </LinearGradient>
 
-      <View style={[styles.section, { backgroundColor: Colors[theme].card }]}>
-        <Text style={[styles.sectionTitle, { color: Colors[theme].text }]}>Aldığı Dersler</Text>
+      {/* Aldığı Dersler */}
+      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Aldığı Dersler</Text>
         <FlatList
           data={student.lessons}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.lessonItem}>
-              <Text style={[styles.lessonText, { color: Colors[theme].text }]}>
+              <Text style={[styles.lessonText, { color: colors.text }]}>
                 • {item.name}
               </Text>
             </View>
@@ -50,12 +51,15 @@ export default function ProfileScreen() {
         />
       </View>
 
-      <View style={[styles.section, { backgroundColor: Colors[theme].card }]}>
-        <Text style={[styles.sectionTitle, { color: Colors[theme].text }]}>Borç Durumu</Text>
-        <View style={[
-          styles.debtBox,
-          { backgroundColor: theme === "light" ? "#ffe6e6" : "#662222" }
-        ]}>
+      {/* Borç Durumu */}
+      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Borç Durumu</Text>
+        <View
+          style={[
+            styles.debtBox,
+            { backgroundColor: theme === "light" ? "#ffe6e6" : "#662222" },
+          ]}
+        >
           <Text style={styles.debtText}>{student.debt} TL</Text>
         </View>
       </View>
@@ -66,15 +70,16 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    paddingTop: 60, // ⬅️ Arttırarak aşağı kaydır
-    paddingBottom: 30,
+    height: height * 0.18,
     paddingHorizontal: 20,
+    paddingTop: height * 0.02,
+    justifyContent: "center",
     alignItems: "center",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
   name: {
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 5,
   },
