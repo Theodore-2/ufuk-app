@@ -1,0 +1,98 @@
+{
+  "users": [
+    {
+      "id": "u_001",
+      "profile": {
+        "name": "Arda Çimen",
+        "studentNo": "202100123",
+        "phone": "+90 555 123 4567",
+        "totalDebt": 1250
+      },
+
+      "settings": {
+        "theme": "light",
+        "notificationOffsetMinutes": 30,
+        "enableLocalNotifications": true,
+        "lastScheduleViewedAt": "2025-08-10T09:00:00.000Z",
+        "expoPushToken": null
+      },
+
+      "announcements": [
+        {
+          "id": "1",
+          "title": "📢 Matematik Sınavı",
+          "content": "Yarın saat 10:00’da yapılacaktır.",
+          "sender": "Prof. Dr. Ahmet Yılmaz",
+          "date": "2025-08-12 09:00",
+          "read": false
+        },
+        {
+          "id": "2",
+          "title": "📢 Fizik Dersi İptal",
+          "content": "Bugünkü ders hava muhalefeti nedeniyle iptal edildi.",
+          "sender": "Doç. Dr. Elif Kaya",
+          "date": "2025-08-10 14:30",
+          "read": true
+        },
+        {
+          "id": "3",
+          "title": "📢 Yeni Kütüphane Kuralları",
+          "content": "Kütüphane kurallarında değişiklik yapıldı. Lütfen okuyunuz.",
+          "sender": "Kütüphane Müdürü",
+          "date": "2025-08-09 11:00",
+          "read": false
+        },
+        {
+          "id": "4",
+          "title": "📢 Yaz Okulu Başvuruları",
+          "content": "Yaz okulu başvuruları başladı. Son tarih 30 Haziran.",
+          "sender": "Öğrenci İşleri",
+          "date": "2025-06-01 08:00",
+          "read": true
+        }
+      ],
+
+      "schedule": [
+        { "id": "s1", "day": "Pazartesi",  "time": "09:00",            "title": "Matematik" },
+        { "id": "s2", "day": "Pazartesi",  "time": "13:00",            "title": "Fizik" },
+        { "id": "s3", "day": "Salı",       "time": "10:00 - 11.30",    "title": "Kimya" },
+        { "id": "s4", "day": "Çarşamba",   "time": "11:00",            "title": "Biyoloji" },
+        { "id": "s5", "day": "Perşembe",   "time": "15:00",            "title": "Tarih" }
+      ],
+
+      "upcomingLessons": [
+        { "id": "u1", "time": "09:00", "title": "Matematik", "status": "Aktif" },
+        { "id": "u2", "time": "13:00", "title": "Fizik",     "status": "Aktif" },
+        { "id": "u3", "time": "15:00", "title": "Kimya",     "status": "İptal" },
+        { "id": "u4", "time": "17:00", "title": "Biyoloji",  "status": "Aktif" },
+        { "id": "u5", "time": "19:00", "title": "Tarih",     "status": "İptal" },
+        { "id": "u6", "time": "21:00", "title": "Coğrafya",  "status": "Aktif" }
+      ],
+
+      "lessonCatalog": [
+        { "id": "1", "name": "Matematik", "teacher": "Ahmet Hoca",  "day": "Pazartesi",  "time": "09:00" },
+        { "id": "2", "name": "Fizik",     "teacher": "Ayşe Hoca",   "day": "Salı",       "time": "11:00" },
+        { "id": "3", "name": "Kimya",     "teacher": "Mehmet Hoca", "day": "Salı",       "time": "13:00" },
+        { "id": "4", "name": "Biyoloji",  "teacher": "Ali Hoca",    "day": "Çarşamba",   "time": "15:00" },
+        { "id": "5", "name": "Geometri",  "teacher": "Selin Hoca",  "day": "Perşembe",   "time": "10:00" }
+      ],
+
+      "enrolledLessons": [
+        { "id": "e1", "name": "Matematik I" },
+        { "id": "e2", "name": "Fizik II" },
+        { "id": "e3", "name": "Programlama Temelleri" },
+        { "id": "e4", "name": "Veri Tabanı Yönetim Sistemleri" }
+      ],
+
+      "debtDetails": [
+        { "id": "d1", "lesson": "Matematik I",                     "amount": 500 },
+        { "id": "d2", "lesson": "Veri Tabanı Yönetim Sistemleri",  "amount": 750 }
+      ],
+
+      "pendingLessonRequests": [
+        { "id": "r1", "lesson": "Fizik II", "status": "Beklemede" },
+        { "id": "r2", "lesson": "Kimya I",  "status": "Onaylandı" }
+      ]
+    }
+  ]
+}
